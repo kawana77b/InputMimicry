@@ -24,8 +24,8 @@ var keyboard = new Keyboard();
 await keyboard.PushAsync(KeyCode.A);
 
 // Receive keyboard input
-using var reciever = new KeyboardReceiver();
-reciever.KeyDown += (sender, e) =>
+using var receiver = new KeyboardReceiver();
+receiver.KeyDown += (sender, e) =>
 {
     Console.WriteLine(e.KeyCode);
 };
