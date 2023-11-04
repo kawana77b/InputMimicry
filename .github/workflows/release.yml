@@ -1,0 +1,45 @@
+---
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-2022
+    timeout-minutes: 5
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build Program
+        run: dotnet build --no-restore -c Release
+
+      - name: Create Nuget Package
+        run: dotnet pack src/InputMimicry/InputMimicry.csproj -c Release --output nupkgs
+
+      - name: Create Release Draft
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          draft: true
+
+      - name: Push nuget package to Github Pacakges
+        run: |
+          dotnet nuget add source "https://nuget.pkg.github.com/kawana77b/index.json" -n "github" -u kawana77b -p ${{secrets.GH_PACKAGES_PAT}} --store-password-in-clear-text
+          cd nupkgs && dotnet nuget push "*.nupkg" --api-key ${{secrets.GH_PACKAGES_PAT}} --source "github" --skip-duplicate
