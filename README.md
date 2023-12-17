@@ -12,7 +12,7 @@ A simple library for emulating devices and acquiring display information.
 
 Currently TargetPlatform is set as follows:
 
-- .NET 6.0 (Windows Only)
+- .NET 8.0 (Windows Only)
 - .NET Framework 4.8
 
 ## Install
