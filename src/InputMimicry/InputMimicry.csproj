@@ -6,7 +6,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <RootNamespace>InputMimicry</RootNamespace>
 
-    <Version>0.5.1</Version>
+    <Version>0.5.2</Version>
     <PackageId>InputMimicry</PackageId>
     <Title>InputMimicry</Title>
     <Authors>Shimarisu121</Authors>
