@@ -34,7 +34,7 @@ namespace InputMimicry
         /// </summary>
         /// <param name="point"></param>
         /// <param name="cancellationToken">Token to cancel the operation.</param>
-        Task MoveAysnc(Point point, CancellationToken cancellationToken = default);
+        Task MoveAsync(Point point, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Left click

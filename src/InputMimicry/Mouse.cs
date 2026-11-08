@@ -81,7 +81,7 @@ namespace InputMimicry
             => await SetPositionAsync(CurrentPos.X + x, CurrentPos.Y + y, cancellationToken);
 
         /// <inheritdoc/>
-        public async Task MoveAysnc(Point point, CancellationToken cancellationToken = default)
+        public async Task MoveAsync(Point point, CancellationToken cancellationToken = default)
             => await MoveAsync(point.X, point.Y, cancellationToken);
 
         /// <inheritdoc/>
