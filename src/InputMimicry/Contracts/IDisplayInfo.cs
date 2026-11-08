@@ -43,7 +43,8 @@ namespace InputMimicry
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="ArgumentException">The coordinates are outside the screen.</exception>
+        /// <exception cref="InvalidOperationException">The color could not be read from the screen.</exception>
         Color GetColor(int x, int y);
 
         /// <summary>
