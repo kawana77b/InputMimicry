@@ -1,6 +1,7 @@
 ﻿using InputMimicry.Commands;
 using InputMimicry.Win32;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace InputMimicry
@@ -36,7 +37,7 @@ namespace InputMimicry
         public event EventHandler<KeyEventArgs> KeyPushed;
 
         /// <inheritdoc/>
-        public async Task PushAsync(KeyCode keyCode)
+        public async Task PushAsync(KeyCode keyCode, CancellationToken cancellationToken = default)
         {
             await ExecuteAsync(() =>
             {
@@ -49,7 +50,7 @@ namespace InputMimicry
                 new KeyboardActionCommand((short)keyCode, actions).Execute();
 
                 KeyPushed?.Invoke(this, new KeyEventArgs(keyCode));
-            });
+            }, cancellationToken);
         }
     }
 }

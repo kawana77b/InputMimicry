@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace InputMimicry
@@ -43,13 +44,27 @@ namespace InputMimicry
         /// </summary>
         /// <param name="action"></param>
         /// <returns></returns>
-        protected virtual async Task ExecuteAsync(Action action)
+        protected virtual Task ExecuteAsync(Action action)
+            => ExecuteAsync(action, CancellationToken.None);
+
+        /// <summary>
+        /// Executes the given action and waits for the interval.
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="cancellationToken">
+        /// Token to cancel the operation. If canceled before the action starts, the action is not executed.
+        /// If canceled while waiting for the interval, the action has already been executed.
+        /// </param>
+        /// <returns></returns>
+        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        protected virtual async Task ExecuteAsync(Action action, CancellationToken cancellationToken)
         {
             if (action == null)
                 throw new ArgumentNullException(nameof(action));
 
-            await Task.Run(action);
-            await Task.Delay(IntervalMilliseconds);
+            cancellationToken.ThrowIfCancellationRequested();
+            await Task.Run(action, cancellationToken);
+            await Task.Delay(IntervalMilliseconds, cancellationToken);
         }
     }
 }
