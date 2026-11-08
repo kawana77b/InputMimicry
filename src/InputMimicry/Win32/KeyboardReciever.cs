@@ -39,7 +39,11 @@ namespace InputMimicry.Win32
     internal enum WParam
     {
         KeyboardKeyDown = 256,
-        KeyboardKeyUp = 257
+        KeyboardKeyUp = 257,
+
+        // sent instead of KeyDown/KeyUp when Alt is held, or for F10
+        KeyboardSysKeyDown = 260,
+        KeyboardSysKeyUp = 261,
     }
 
     /// <summary>
@@ -229,10 +233,12 @@ namespace InputMimicry.Win32
                 switch ((WParam)wParam)
                 {
                     case WParam.KeyboardKeyDown:
+                    case WParam.KeyboardSysKeyDown:
                         KeyDown?.Invoke(this, ea);
                         break;
 
                     case WParam.KeyboardKeyUp:
+                    case WParam.KeyboardSysKeyUp:
                         KeyUp?.Invoke(this, ea);
                         break;
                 }
