@@ -22,7 +22,7 @@ namespace InputMimicry
         /// The interval in milliseconds between each action.
         /// </summary>
         /// <remarks>
-        /// This value must be greater than 100. Default is 200.
+        /// This value must be 100 or greater. Default is 200.
         /// </remarks>
         public int IntervalMilliseconds
         {
@@ -32,7 +32,7 @@ namespace InputMimicry
                 // Set the lower limit to 100 ms. There is no specific rationale for this, but it is an insurance policy.
                 var lowerLimit = EmulatorConstants.IntervalMillisecondsLowerLimit;
                 if (value < lowerLimit)
-                    throw new ArgumentOutOfRangeException(nameof(IntervalMilliseconds), $"IntervalMilliseconds must be greater than {lowerLimit}");
+                    throw new ArgumentOutOfRangeException(nameof(IntervalMilliseconds), $"IntervalMilliseconds must be {lowerLimit} or greater");
 
                 _intervalMilliseconds = value;
             }
