@@ -40,18 +40,21 @@ namespace InputMimicry
         /// Left click
         /// </summary>
         /// <param name="cancellationToken">Token to cancel the operation.</param>
+        /// <exception cref="System.ComponentModel.Win32Exception">The input could not be sent (e.g. blocked by UIPI).</exception>
         Task LeftClickAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Right click
         /// </summary>
         /// <param name="cancellationToken">Token to cancel the operation.</param>
+        /// <exception cref="System.ComponentModel.Win32Exception">The input could not be sent (e.g. blocked by UIPI).</exception>
         Task RightClickAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Middle click
         /// </summary>
         /// <param name="cancellationToken">Token to cancel the operation.</param>
+        /// <exception cref="System.ComponentModel.Win32Exception">The input could not be sent (e.g. blocked by UIPI).</exception>
         Task MiddleClickAsync(CancellationToken cancellationToken = default);
     }
 }
