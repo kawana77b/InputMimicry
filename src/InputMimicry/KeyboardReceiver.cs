@@ -69,6 +69,16 @@ namespace InputMimicry
         private readonly Win32.KeyboardReceiver _receiver = new Win32.KeyboardReceiver();
 
         /// <summary>
+        /// When true (default), key events injected by software, such as those sent by <see cref="Keyboard"/>,
+        /// are not reported. This prevents feedback loops when sending keys from a key event handler.
+        /// </summary>
+        public bool IgnoreInjected
+        {
+            get => _receiver.IgnoreInjected;
+            set => _receiver.IgnoreInjected = value;
+        }
+
+        /// <summary>
         /// Generate a new instance.
         /// </summary>
         public KeyboardReceiver()
