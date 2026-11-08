@@ -215,34 +215,38 @@ namespace InputMimicry.Win32
         // https://learn.microsoft.com/en-us/windows/win32/winmsg/lowlevelkeyboardproc
         private int OnHook(int nCode, IntPtr wParam, IntPtr lParam)
         {
-            // use lParam to get the virtual keyCode
-            short keyCode = (short)Marshal.ReadInt32(lParam);
-            // to trigger an event on the C# side, so set the event argument
-            var ea = new KeyboardReceiverEventArgs(keyCode, HookResult.AllowStream);
+            // when nCode is negative, the hook must pass the message on without processing it
+            if (nCode < 0)
+                return CallNextHookEx(_hookPtr, nCode, wParam, lParam).ToInt32();
 
-            switch ((WParam)wParam)
+            try
             {
-                case WParam.KeyboardKeyDown:
-                    KeyDown?.Invoke(this, ea);
-                    break;
+                // use lParam to get the virtual keyCode
+                short keyCode = (short)Marshal.ReadInt32(lParam);
+                // to trigger an event on the C# side, so set the event argument
+                var ea = new KeyboardReceiverEventArgs(keyCode, HookResult.AllowStream);
 
-                case WParam.KeyboardKeyUp:
-                    KeyUp?.Invoke(this, ea);
-                    break;
+                switch ((WParam)wParam)
+                {
+                    case WParam.KeyboardKeyDown:
+                        KeyDown?.Invoke(this, ea);
+                        break;
+
+                    case WParam.KeyboardKeyUp:
+                        KeyUp?.Invoke(this, ea);
+                        break;
+                }
+
+                // Disabling key input (HookResult.DisposeStream -> return 1) is intentionally not supported.
+            }
+            catch (Exception ex)
+            {
+                // An exception must not escape into native code.
+                // Report it and keep the hook chain working.
+                Trace.TraceError($"{nameof(KeyboardReceiver)}: an event handler threw an exception. {ex}");
             }
 
-            switch (ea.HookResult)
-            {
-                case HookResult.AllowStream:
-                    return CallNextHookEx(_hookPtr, nCode, wParam, lParam).ToInt32();
-
-                // Disables key input. In other words, nothing can be done.
-                // case HookResult.DisposeStream:
-                //     return 1;
-
-                default:
-                    return CallNextHookEx(_hookPtr, nCode, wParam, lParam).ToInt32();
-            }
+            return CallNextHookEx(_hookPtr, nCode, wParam, lParam).ToInt32();
         }
     }
 }

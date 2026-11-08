@@ -44,6 +44,15 @@ namespace InputMimicry
     /// </summary>
     /// <remarks>
     /// This class implements <c>IDisposable</c>, so you should call <c>Dispose()</c> when you are done with this class.
+    /// <para>
+    /// The thread that creates this instance must run a message loop (e.g. a WinForms/WPF UI thread),
+    /// otherwise no events are raised.
+    /// </para>
+    /// <para>
+    /// Event handlers run inside a system-wide keyboard hook. Keep them short:
+    /// if they take too long (about 1 second by default), Windows silently removes the hook.
+    /// Move heavy work to another thread. Exceptions thrown by handlers are caught and written to <c>Trace</c>.
+    /// </para>
     /// </remarks>
     public class KeyboardReceiver : IDisposable
     {
