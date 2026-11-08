@@ -132,6 +132,15 @@ namespace InputMimicry.Win32
 
         private IntPtr _hookPtr = IntPtr.Zero;
 
+        // Keep a reference to the delegate passed to native code.
+        // Without this, the GC can collect it while the hook is active and the process crashes.
+        private readonly HookProc _hookProc;
+
+        public KeyboardReceiver()
+        {
+            _hookProc = OnHook;
+        }
+
         #region flags
 
         private bool _hookStarted = false;
@@ -182,7 +191,7 @@ namespace InputMimicry.Win32
                     // set up the C# event to be fired when the keyboard is pressed
                     _hookPtr = SetWindowsHookEx(
                         (int)HookId.Keyboard,
-                        OnHook,
+                        _hookProc,
                         GetModuleHandle(currentModule.ModuleName),
                         (uint)DwThreadId.AllThread
                     );
