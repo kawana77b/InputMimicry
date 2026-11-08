@@ -8,6 +8,9 @@
         }
       ],
       "dest": "api",
+      "properties": {
+        "EnableWindowsTargeting": "true"
+      },
       "disableGitFeatures": false,
       "disableDefaultFilter": false
     }
