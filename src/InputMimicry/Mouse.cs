@@ -77,7 +77,7 @@ namespace InputMimicry
 
         /// <inheritdoc/>
         public async Task MoveAsync(int x, int y)
-            => await ExecuteAsync(async () => await SetPositionAsync(CurrentPos.X + x, CurrentPos.Y + y));
+            => await SetPositionAsync(CurrentPos.X + x, CurrentPos.Y + y);
 
         /// <inheritdoc/>
         public async Task MoveAysnc(Point point)
