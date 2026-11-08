@@ -44,6 +44,15 @@ namespace InputMimicry
     /// </summary>
     /// <remarks>
     /// This class implements <c>IDisposable</c>, so you should call <c>Dispose()</c> when you are done with this class.
+    /// <para>
+    /// The thread that creates this instance must run a message loop (e.g. a WinForms/WPF UI thread),
+    /// otherwise no events are raised.
+    /// </para>
+    /// <para>
+    /// Event handlers run inside a system-wide keyboard hook. Keep them short:
+    /// if they take too long (about 1 second by default), Windows silently removes the hook.
+    /// Move heavy work to another thread. Exceptions thrown by handlers are caught and written to <c>Trace</c>.
+    /// </para>
     /// </remarks>
     public class KeyboardReceiver : IDisposable
     {
@@ -58,6 +67,16 @@ namespace InputMimicry
         public event EventHandler<KeyboardReceiverEventArgs> KeyUp;
 
         private readonly Win32.KeyboardReceiver _receiver = new Win32.KeyboardReceiver();
+
+        /// <summary>
+        /// When true (default), key events injected by software, such as those sent by <see cref="Keyboard"/>,
+        /// are not reported. This prevents feedback loops when sending keys from a key event handler.
+        /// </summary>
+        public bool IgnoreInjected
+        {
+            get => _receiver.IgnoreInjected;
+            set => _receiver.IgnoreInjected = value;
+        }
 
         /// <summary>
         /// Generate a new instance.

@@ -2,6 +2,7 @@
 using InputMimicry.Win32;
 using System;
 using System.Drawing;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace InputMimicry
@@ -54,7 +55,7 @@ namespace InputMimicry
         public Point CurrentPos { get; private set; }
 
         /// <inheritdoc/>
-        public async Task SetPositionAsync(Point point)
+        public async Task SetPositionAsync(Point point, CancellationToken cancellationToken = default)
         {
             await ExecuteAsync(() =>
             {
@@ -68,23 +69,23 @@ namespace InputMimicry
 
                 CurrentPos = cmd.Point;
                 MouseMove?.Invoke(this, new MouseEventArgs(CurrentPos));
-            });
+            }, cancellationToken);
         }
 
         /// <inheritdoc/>
-        public async Task SetPositionAsync(int x, int y)
-            => await SetPositionAsync(new Point(x, y));
+        public async Task SetPositionAsync(int x, int y, CancellationToken cancellationToken = default)
+            => await SetPositionAsync(new Point(x, y), cancellationToken);
 
         /// <inheritdoc/>
-        public async Task MoveAsync(int x, int y)
-            => await ExecuteAsync(async () => await SetPositionAsync(CurrentPos.X + x, CurrentPos.Y + y));
+        public async Task MoveAsync(int x, int y, CancellationToken cancellationToken = default)
+            => await SetPositionAsync(CurrentPos.X + x, CurrentPos.Y + y, cancellationToken);
 
         /// <inheritdoc/>
-        public async Task MoveAysnc(Point point)
-            => await MoveAsync(point.X, point.Y);
+        public async Task MoveAsync(Point point, CancellationToken cancellationToken = default)
+            => await MoveAsync(point.X, point.Y, cancellationToken);
 
         /// <inheritdoc/>
-        public async Task LeftClickAsync()
+        public async Task LeftClickAsync(CancellationToken cancellationToken = default)
         {
             await ExecuteAsync(() =>
             {
@@ -96,14 +97,14 @@ namespace InputMimicry
 
                 new MouseActionCommand(actions).Execute();
                 LeftClicked?.Invoke(this, new MouseEventArgs(CurrentPos));
-            });
+            }, cancellationToken);
         }
 
         /// <summary>
         /// Emulate double click of left button.
         /// </summary>
         /// <returns></returns>
-        public async Task LeftDoubleClickAsync()
+        public async Task LeftDoubleClickAsync(CancellationToken cancellationToken = default)
         {
             await ExecuteAsync(() =>
             {
@@ -119,11 +120,11 @@ namespace InputMimicry
                 // The event is fired twice.
                 LeftClicked?.Invoke(this, new MouseEventArgs(CurrentPos));
                 LeftClicked?.Invoke(this, new MouseEventArgs(CurrentPos));
-            });
+            }, cancellationToken);
         }
 
         /// <inheritdoc/>
-        public async Task MiddleClickAsync()
+        public async Task MiddleClickAsync(CancellationToken cancellationToken = default)
         {
             await ExecuteAsync(() =>
             {
@@ -135,11 +136,11 @@ namespace InputMimicry
 
                 new MouseActionCommand(actions).Execute();
                 MiddleClicked?.Invoke(this, new MouseEventArgs(CurrentPos));
-            });
+            }, cancellationToken);
         }
 
         /// <inheritdoc/>
-        public async Task RightClickAsync()
+        public async Task RightClickAsync(CancellationToken cancellationToken = default)
         {
             await ExecuteAsync(() =>
             {
@@ -151,7 +152,7 @@ namespace InputMimicry
 
                 new MouseActionCommand(actions).Execute();
                 RightClicked?.Invoke(this, new MouseEventArgs(CurrentPos));
-            });
+            }, cancellationToken);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace InputMimicry
@@ -15,6 +16,8 @@ namespace InputMimicry
         /// </summary>
         /// <param name="keyCode"></param>
         /// <returns></returns>
-        Task PushAsync(KeyCode keyCode);
+        /// <param name="cancellationToken">Token to cancel the operation.</param>
+        /// <exception cref="System.ComponentModel.Win32Exception">The input could not be sent (e.g. blocked by UIPI).</exception>
+        Task PushAsync(KeyCode keyCode, CancellationToken cancellationToken = default);
     }
 }

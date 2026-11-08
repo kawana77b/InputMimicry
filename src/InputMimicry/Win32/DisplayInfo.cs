@@ -46,6 +46,9 @@ namespace InputMimicry.Win32
         [DllImport("gdi32.dll")]
         private static extern uint GetPixel(IntPtr hdc, int x, int y);
 
+        // Returned by GetPixel when the pixel is outside the clipping region or the call fails.
+        private const uint CLR_INVALID = 0xFFFFFFFF;
+
         public DisplayInfo()
         {
             // when using GetSystemMetrics(), specify the value of SM_CXSCREEN and SM_CYSCREEN.
@@ -118,26 +121,28 @@ namespace InputMimicry.Win32
             if (!HasCoordinates(x, y))
                 throw new ArgumentException($"Position specified is out of range. x: {x}, y: {y} / displaySize: {Width}*{Height}");
 
-            Color pixelColor;
             // retrieve the Device Context, allowing access to pixel information on the desktop screen
             IntPtr desktopPtr = GetDC(IntPtr.Zero);
+            if (desktopPtr == IntPtr.Zero)
+                throw new InvalidOperationException("Failed to get the device context of the screen.");
+
+            uint color;
             try
             {
-                using (Graphics g = Graphics.FromHdc(desktopPtr))
-                {
-                    uint color = GetPixel(desktopPtr, x, y);
-                    // extract rgb components when interpreting 32-bit integers as argb format
-                    pixelColor = Color.FromArgb((int)(color & 0x000000FF),
-                                                (int)(color & 0x0000FF00) >> 8,
-                                                (int)(color & 0x00FF0000) >> 16);
-                }
+                color = GetPixel(desktopPtr, x, y);
             }
             finally
             {
                 _ = ReleaseDC(IntPtr.Zero, desktopPtr);
             }
 
-            return pixelColor;
+            if (color == CLR_INVALID)
+                throw new InvalidOperationException($"Failed to get the pixel color. x: {x}, y: {y}");
+
+            // GetPixel returns a COLORREF (0x00BBGGRR)
+            return Color.FromArgb((int)(color & 0x000000FF),
+                                  (int)(color & 0x0000FF00) >> 8,
+                                  (int)(color & 0x00FF0000) >> 16);
         }
 
         /// <summary>

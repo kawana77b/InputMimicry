@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using System;
+using System.ComponentModel;
 
 namespace InputMimicry.Win32
 {
@@ -109,8 +110,9 @@ namespace InputMimicry.Win32
         /// <param name="nInputs"></param>
         /// <param name="pInputs"></param>
         /// <param name="cbsize"></param>
-        [DllImport("user32.dll")]
-        public static extern void SendInput(int nInputs, ref INPUT pInputs, int cbsize);
+        /// <returns>The number of events successfully inserted. 0 if blocked by another thread.</returns>
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern uint SendInput(int nInputs, ref INPUT pInputs, int cbsize);
 
         /// <summary>
         /// Translates (maps) a virtual-key code into a scan code or character value, or translates a scan code into a virtual-key code.
@@ -126,7 +128,21 @@ namespace InputMimicry.Win32
         //
         // These are shortcuts. They reduce the number of arguments and are safe to use
         //------------------------------
-        public static void SendInput(ref INPUT[] pInputs) => SendInput(pInputs.Length, ref pInputs[0], Marshal.SizeOf(pInputs[0]));
+        /// <exception cref="Win32Exception">Not all inputs could be inserted.</exception>
+        public static void SendInput(ref INPUT[] pInputs)
+        {
+            if (pInputs == null || pInputs.Length == 0)
+                return;
+
+            uint sent = SendInput(pInputs.Length, ref pInputs[0], Marshal.SizeOf(typeof(INPUT)));
+            if (sent != pInputs.Length)
+            {
+                int error = Marshal.GetLastWin32Error();
+                throw new Win32Exception(error,
+                    $"SendInput inserted {sent} of {pInputs.Length} inputs. " +
+                    "The input may have been blocked by another thread or by UIPI (e.g. the target window runs as administrator).");
+            }
+        }
 
         public static short MapVirtualKey(int wCode) => (short)MapVirtualKey(wCode, 0);
     }
